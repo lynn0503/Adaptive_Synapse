@@ -21,12 +21,12 @@ function electric_synapse!(du,u,h,p,t)
     du[1]=1/C*(-g_L*(u[1]-V_rest)+g_es*(h(p,t-d_es)[2]-u[1])+I_ext+I_ext1)
     du[2]=1/C*(-g_L*(u[2]-V_rest)+g_es*(h(p,t-d_es)[1]-u[2])+I_ext+I_ext2)
     
-    # if above threshold, spike
+    # if above threshold, spike at 40
     if u[1]>V_th
-        u[1]=30
+        u[1]=40
     end
     if u[2]>V_th
-        u[2]=30
+        u[2]=40
     end
     
 end

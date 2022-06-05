@@ -21,10 +21,10 @@ function chemical_synapse!(du,u,h,p,t)
     
     # if above threshold, then spike
     if u[1]>V_th
-        u[1]=30
+        u[1]=40
     end
     if u[2]>V_th
-        u[2]=30
+        u[2]=40
     end
     
 end
