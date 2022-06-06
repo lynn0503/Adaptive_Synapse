@@ -5,6 +5,7 @@ include("ccf.jl")
 
 using Statistics
 using Plots
+using DifferentialEquations
 
 gr()
 l = @layout [a b]

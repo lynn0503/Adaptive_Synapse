@@ -1,6 +1,3 @@
-using DifferentialEquations
-# using Logging
-# Logging.disable_logging(Logging.Info)
 
 function electric_synapse!(du,u,h,p,t)
     # parameter

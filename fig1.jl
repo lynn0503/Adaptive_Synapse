@@ -3,6 +3,7 @@ include("chemical_synapse.jl")
 include("ccf.jl")
 
 using Plots
+using DifferentialEquations
 gr(leg=false)
 l = @layout [a b; c d]
 
