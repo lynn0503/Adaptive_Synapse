@@ -26,3 +26,29 @@ function ccf(sol,binsize)
     return ccf
     
 end
+
+function ccf_sampling(u1,u2,binsize,corr_len,samples)
+    # u1=[ui[1] for ui in sol.u]
+    # u2=[ui[2] for ui in sol.u]
+    # u1=u1[1,:]
+    # u2=u2[1,:]
+    
+    idx=1:length(u1)
+    fire1_idx=idx[u1.>0]
+    s1,bins=histcountindices(fire1_idx,0:binsize:length(u1))
+    fire2_idx=idx[u2.>0]
+    s2,bins=histcountindices(fire2_idx,0:binsize:length(u1))
+    # samples=10
+    N=length(s1)
+    n=N/samples
+    ccf_by_time=Array{Float64}(undef,samples,1)
+    for i in 1:samples-1
+        start_idx=floor(Int,(i-1)*n+1)
+        s1_temp=s1[start_idx:start_idx+corr_len-1]
+        s2_temp=s2[start_idx:start_idx+corr_len-1]
+        corr=crosscor(s1_temp,s2_temp)
+        ccf_by_time[i]=maximum(abs.(corr))
+    end
+    return ccf_by_time
+
+end

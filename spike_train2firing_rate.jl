@@ -1,4 +1,5 @@
 using NaNStatistics
+
 function spike_train2firing_rate(sol,binsize)
     # unit of binsize is ms
     # stepsize is 0.1ms by default
@@ -17,14 +18,15 @@ function spike_train2firing_rate(sol,binsize)
     
 end
 
-function bar_fire_rate(spike_train)
+function bar_fire_rate(spike_train,binsize)
     # unit of binsize is ms
     # stepsize is 0.1ms by default
     n=length(spike_train)
 #     @show n
     idx=1:n
     fire_idx=idx[spike_train.>0]
-    fire_binned,bins=histcountindices(fire_idx,0:100)
-    bar(fire_binned)
+    fire_binned,bins=histcountindices(fire_idx,0:binsize:n)
+    bar(fire_binned,ylabel="Firing Rate",xlims=(0,50))
  
 end
+

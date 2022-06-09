@@ -4,15 +4,15 @@ function electrical_synapse_adaptive_euler(trial_number,tspan)
     V_rest = -70
     V_th = -50
     V_peak = 40
-    d_es = 0.3 # time dedaly
-    τ_f = 1000 # time constant of short-term facilitation
+    # d_es = 0.3 # time dedaly
+    τ_f = 10000 # time constant of short-term facilitation
     τ_l = 50 # time window of plasticity
     τ_u = 10 # τ_u = RC
     u_f = 0.05 #rate of facilitation
-    g_0 =0.022
-    g_max =0.1
-    σ = 5 # 
-    c = 0.5 # common input current
+    g_0 =0.022 # min conductance
+    g_max =0.1 # max conductance
+    σ = 5 # variance of input
+    c = 1 # common input current
     trials =  trial_number
     tspan = tspan 
     τ_ref = 2 # refractory period 2ms
@@ -30,16 +30,25 @@ function electrical_synapse_adaptive_euler(trial_number,tspan)
     for k in 1:trials
         if k==1
             ges[k,1]=g_temp
+            ges[k,2]=ges[k,1]+0.002
+            ges[k,3]=ges[k,2]+0.002
         else
             ges[k,1]=ges[k-1,tspan]
-            g_temp = ges[k-1,tspan]
+            ges[k,2]=ges[k,1]+0.002
+            ges[k,3]=ges[k,2]+0.002
+            g_temp = ges[k,3]
         end
         # init local
         u1[k,1]= V_rest + randn()
+        u1[k,2]= V_rest + randn()
+        u1[k,3]= V_rest + randn()
         u2[k,1]= V_rest + randn()
-        neu_t1=0
+        u2[k,2]= V_rest + randn()
+        u2[k,3]= V_rest + randn()
+
+        # neu_t1=0
         spike_t1=0
-        neu_t2=0
+        # neu_t2=0
         spike_t2=0
         t_ref1 = τ_ref/dt+1
         t_ref2 = τ_ref/dt+1
@@ -48,12 +57,12 @@ function electrical_synapse_adaptive_euler(trial_number,tspan)
         I_input2 = [20*exp(-i/20)+σ*(sqrt(c)*I_c+sqrt(1-c)*randn()) for i in 1:tspan]
 
         # step in one trial
-        for i in 2:tspan
+        for i in 4:tspan
             ges[k,i] = g_temp
             # u1
             if t_ref1 > τ_ref/dt
                 if u2[k,i-1]>u1[k,i-1]
-                    delta_u1 = - (u1[k,i-1] - V_rest)/τ_u + I_input[i-1]/(τ_u*g_L) + (u2[k,i-1]-u1[k,i-1])*g_temp/(τ_u*g_L)
+                    delta_u1 = - (u1[k,i-1] - V_rest)/τ_u + I_input[i-1]/(τ_u*g_L) + (u2[k,i-3]-u1[k,i-1])*g_temp/(τ_u*g_L)
                 else
                     delta_u1 = - (u1[k,i-1] - V_rest)/τ_u + I_input[i-1]/(τ_u*g_L) 
                 end
@@ -66,7 +75,7 @@ function electrical_synapse_adaptive_euler(trial_number,tspan)
             # u2
             if t_ref2 > τ_ref/dt
                 if u1[k,i-1]>u2[k,i-1]
-                    delta_u2 = - (u2[k,i-1] - V_rest)/τ_u + I_input2[i-1]/(τ_u*g_L) + (u1[k,i-1]-u2[k,i-1])*g_temp/(τ_u*g_L)
+                    delta_u2 = - (u2[k,i-1] - V_rest)/τ_u + I_input2[i-1]/(τ_u*g_L) + (u1[k,i-3]-u2[k,i-1])*g_temp/(τ_u*g_L)
                 else
                     delta_u2 = - (u2[k,i-1] - V_rest)/τ_u + I_input2[i-1]/(τ_u*g_L) 
                 end
@@ -81,7 +90,7 @@ function electrical_synapse_adaptive_euler(trial_number,tspan)
                 # fire leads to ltp
                 u1[k,i] = V_peak
                 spike_train1[k,i] = 1
-                neu_t1 = i 
+                # neu_t1 = i 
                 spike_t1 = i 
                 t_ref1 = 1 
                 if spike_t2 > 0
@@ -99,7 +108,7 @@ function electrical_synapse_adaptive_euler(trial_number,tspan)
                 # fire leads to ltp
                 u2[k,i] = V_peak
                 spike_train2[k,i] = 1
-                neu_t2 = i 
+                # neu_t2 = i 
                 spike_t2 = i 
                 t_ref2 = 1 
                 if spike_t1 > 0

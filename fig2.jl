@@ -52,7 +52,7 @@ u0c=[-60;-60;0.025]
 hc(p,t)=[-60,-60,0.025]
 corrsc=Array{Float64}(undef,4,length(cs),trials)
 tspan = (0.0,100.0)
-for (i,uu) in enumerate([0,0.05,0.08,0.1])
+for (i,uu) in enumerate([0.001,0.05,0.1,0.2])
     for (j,c) in enumerate(cs)
         for k in 1:trials
             @show "chemical", uu, c, k
